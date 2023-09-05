@@ -26,5 +26,11 @@ namespace IsoTreatmentProcessSupportAPI.Controllers
             _userService.ConfirmEmail(emailConfirmationToken);
             return Ok("Email confirmed, thank you!");
         }
+        [HttpPost("login")]
+        public ActionResult Login([FromBody] LoginDto dto)
+        {
+            string token = _userService.GenerateLoginToken(dto);
+            return Ok(token);
+        }
     }
 }

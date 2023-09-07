@@ -63,6 +63,17 @@ namespace IsoTreatmentProcessSupportAPI.Services
                 .Users
                 .FirstOrDefault(e => e.Email == userEmail);
 
+            if (user == null)
+            {
+                throw new NotFoundException("User not found");
+            }
+
+            if (user.EmailConfirmed)
+            {
+                throw new BadRequestException("Email has already been confirmed");
+            }
+
+
             user.EmailConfirmed = true;
             _dbContext.SaveChanges();
         }

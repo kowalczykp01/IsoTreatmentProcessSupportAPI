@@ -1,6 +1,10 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using IsoTreatmentProcessSupportAPI;
 using IsoTreatmentProcessSupportAPI.Entities;
 using IsoTreatmentProcessSupportAPI.Middlewares;
+using IsoTreatmentProcessSupportAPI.Models;
+using IsoTreatmentProcessSupportAPI.Models.Validators;
 using IsoTreatmentProcessSupportAPI.Services;
 using Microsoft.AspNetCore.Identity;
 using NLog.Web;
@@ -15,10 +19,11 @@ var authenticationSettings = new AuthenticationSettings();
 builder.Configuration.GetSection("Authentication").Bind(authenticationSettings);
 
 builder.Services.AddSingleton(authenticationSettings);
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddFluentValidation();
 builder.Services.AddDbContext<IsoSupportDbContext>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
 builder.Services.AddTransient<IMailkitService, MailkitService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ErrorHandlingMiddleware>();

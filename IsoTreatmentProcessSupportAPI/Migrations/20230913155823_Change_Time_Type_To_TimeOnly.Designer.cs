@@ -4,6 +4,7 @@ using IsoTreatmentProcessSupportAPI.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IsoTreatmentProcessSupportAPI.Migrations
 {
     [DbContext(typeof(IsoSupportDbContext))]
-    partial class IsoSupportDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230913155823_Change_Time_Type_To_TimeOnly")]
+    partial class Change_Time_Type_To_TimeOnly
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -54,6 +56,9 @@ namespace IsoTreatmentProcessSupportAPI.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<bool>("IsTaken")
+                        .HasColumnType("bit");
 
                     b.Property<TimeSpan>("Time")
                         .HasColumnType("time");

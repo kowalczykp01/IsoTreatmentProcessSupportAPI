@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using IsoTreatmentProcessSupportAPI.Converters;
+using Microsoft.EntityFrameworkCore;
 
 namespace IsoTreatmentProcessSupportAPI.Entities
 {
@@ -29,6 +30,13 @@ namespace IsoTreatmentProcessSupportAPI.Entities
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(_connectionString);
+        }
+
+        protected override void ConfigureConventions(ModelConfigurationBuilder builder)
+        {
+            base.ConfigureConventions(builder);
+            builder.Properties<TimeOnly>()
+                .HaveConversion<TimeOnlyConverter>();
         }
     }
 }

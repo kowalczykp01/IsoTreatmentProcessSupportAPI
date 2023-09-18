@@ -9,6 +9,8 @@ namespace IsoTreatmentProcessSupportAPI
         public MappingProfile()
         {
             CreateMap<CreateReminderDto, Reminder>();
+
+            CreateMap<Reminder, ReminderDto>();
         }
     }
 }

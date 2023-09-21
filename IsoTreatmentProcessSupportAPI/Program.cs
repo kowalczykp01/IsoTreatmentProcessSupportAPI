@@ -26,9 +26,11 @@ builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
+builder.Services.AddScoped<IValidator<CreateEntryDto>, CreateEntryDtoValidator>();
 builder.Services.AddTransient<IMailkitService, MailkitService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IReminderService, ReminderService>();
+builder.Services.AddScoped<IEntryService, EntryService>();
 builder.Services.AddScoped<ErrorHandlingMiddleware>();
 
 var app = builder.Build();

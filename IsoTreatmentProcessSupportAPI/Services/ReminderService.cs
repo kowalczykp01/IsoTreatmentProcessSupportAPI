@@ -89,7 +89,7 @@ namespace IsoTreatmentProcessSupportAPI.Services
 
             if (reminder is null)
             {
-                throw new NotFoundException("ReminderNotFound");
+                throw new NotFoundException("Reminder not found");
             }
 
             reminder.Time = dto.Time;

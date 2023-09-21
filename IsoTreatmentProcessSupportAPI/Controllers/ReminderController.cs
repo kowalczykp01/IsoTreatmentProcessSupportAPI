@@ -38,7 +38,7 @@ namespace IsoTreatmentProcessSupportAPI.Controllers
         [HttpGet("user/{userId}")]
         public ActionResult<IEnumerable<ReminderDto>> GetAll([FromRoute] int userId)
         {
-            IEnumerable<ReminderDto> reminders = _reminderService.GetAll(userId);
+            var reminders = _reminderService.GetAll(userId);
 
             return Ok(reminders);
         }

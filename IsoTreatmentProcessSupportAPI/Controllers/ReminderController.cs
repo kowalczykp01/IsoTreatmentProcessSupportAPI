@@ -7,6 +7,7 @@ namespace IsoTreatmentProcessSupportAPI.Controllers
 {
     [Route("api/reminder")]
     [ApiController]
+    [Authorize]
     public class ReminderController : ControllerBase
     {
         private readonly IReminderService _reminderService;

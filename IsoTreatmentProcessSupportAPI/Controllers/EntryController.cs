@@ -1,11 +1,13 @@
 ﻿using IsoTreatmentProcessSupportAPI.Models;
 using IsoTreatmentProcessSupportAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IsoTreatmentProcessSupportAPI.Controllers
 {
     [Route("api/entry")]
     [ApiController]
+    [Authorize]
     public class EntryController : ControllerBase
     {
         private readonly IEntryService _entryService;

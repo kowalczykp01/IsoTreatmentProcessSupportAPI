@@ -21,7 +21,7 @@ namespace IsoTreatmentProcessSupportAPI.Controllers
 
             return Ok();
         }
-        [HttpPost("{id}")]
+        [HttpDelete("{id}")]
         public ActionResult Delete([FromRoute] int id)
         {
             _reminderService.Delete(id);

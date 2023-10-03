@@ -109,6 +109,11 @@ namespace IsoTreatmentProcessSupportAPI.Services
                 throw new BadRequestException("Invalid username or password");
             }
 
+            if (user.EmailConfirmed == false)
+            {
+                throw new BadRequestException("Email is not confirmed");
+            }
+
             var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
             if (result == PasswordVerificationResult.Failed)
             {

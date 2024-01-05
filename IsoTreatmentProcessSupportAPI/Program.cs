@@ -53,11 +53,19 @@ builder.Services.AddScoped<IEntryService, EntryService>();
 builder.Services.AddScoped<ITreatmentProcessService, TreatmentProcessService>();
 builder.Services.AddScoped<ErrorHandlingMiddleware>();
 builder.Services.AddSwaggerGen();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("FrontendClient", builder =>
+    builder.AllowAnyMethod()
+    .AllowAnyHeader()
+    .WithOrigins("http://localhost:5173")
+    );
+});
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-
+app.UseCors("FrontendClient");
 app.UseMiddleware<ErrorHandlingMiddleware>();
 app.UseAuthentication();
 app.UseHttpsRedirection();

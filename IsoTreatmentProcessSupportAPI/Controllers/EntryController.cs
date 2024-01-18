@@ -18,14 +18,14 @@ namespace IsoTreatmentProcessSupportAPI.Controllers
         [HttpPost("user/{userId}")]
         public ActionResult Add([FromRoute] int userId, [FromBody] CreateEntryDto dto)
         {
-            _entryService.Add(userId, dto);
+            int id = _entryService.Add(userId, dto);
 
-            return Ok();
+            return Ok(id);
         }
         [HttpGet("user/{userId}")]
-        public ActionResult GetByDate([FromRoute] int userId, [FromBody] GetEntryByDateDto dto)
+        public ActionResult<IEnumerable<EntryDto>> GetAll([FromRoute] int userId)
         {
-            var entries = _entryService.GetByDate(userId, dto);
+            var entries = _entryService.GetAll(userId);
             
             return Ok(entries);
         }

@@ -7,8 +7,8 @@ namespace IsoTreatmentProcessSupportAPI.Services
 {
     public interface IEntryService
     {
-        IEnumerable<EntryDto> GetByDate(int userId, GetEntryByDateDto dto);
-        void Add(int userId, CreateEntryDto dto);
+        IEnumerable<EntryDto> GetAll(int userId);
+        int Add(int userId, CreateEntryDto dto);
         void Update(int id, UpdateEntryDto dto);
         void Delete(int id);
     }
@@ -21,7 +21,7 @@ namespace IsoTreatmentProcessSupportAPI.Services
             _dbContext = dbContext;
             _mapper = mapper;
         }
-        public void Add(int userId, CreateEntryDto dto)
+        public int Add(int userId, CreateEntryDto dto)
         {
             var user = _dbContext.Users.FirstOrDefault(u => u.Id == userId);
 
@@ -36,6 +36,8 @@ namespace IsoTreatmentProcessSupportAPI.Services
 
             _dbContext.Entries.Add(entryEntity);
             _dbContext.SaveChanges();
+
+            return entryEntity.Id;
         }
 
         public void Delete(int id)
@@ -51,7 +53,7 @@ namespace IsoTreatmentProcessSupportAPI.Services
             _dbContext.SaveChanges();
         }
 
-        public IEnumerable<EntryDto> GetByDate(int userId, GetEntryByDateDto dto)
+        public IEnumerable<EntryDto> GetAll(int userId)
         {
             var user = _dbContext.Users.FirstOrDefault(u => u.Id == userId);
 
@@ -61,12 +63,12 @@ namespace IsoTreatmentProcessSupportAPI.Services
             }
 
             var entries = _dbContext.Entries
-                .Where(e => e.Date.Date == dto.Date.Date)
+                .Where(e => e.UserId == userId) 
                 .AsEnumerable();
 
             if (entries.Count() == 0)
             {
-                throw new NotFoundException("Entry(s) not found for the given date");
+                throw new NotFoundException("Entries not found");
             }
 
             var entryDtos = _mapper.Map<IEnumerable<EntryDto>>(entries);

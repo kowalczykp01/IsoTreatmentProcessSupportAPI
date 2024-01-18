@@ -2,6 +2,7 @@
 using MailKit.Security;
 using MimeKit;
 using MimeKit.Text;
+using System.Net;
 
 namespace IsoTreatmentProcessSupportAPI.Services
 {
@@ -18,8 +19,9 @@ namespace IsoTreatmentProcessSupportAPI.Services
         }
         public void Send(string userEmail, string emailConfirmationToken)
         {
+            //emailConfirmationToken = WebUtility.UrlEncode(emailConfirmationToken);
             var email = new MimeMessage();
-            Uri confirmationLink = new Uri("https://localhost:7242/api/user/confirmEmail?" + "emailConfirmationToken=" + emailConfirmationToken);
+            Uri confirmationLink = new Uri("http://localhost:5173/activateAccount?token=" + emailConfirmationToken);
             string body = "<html><body><h1>Welcome to IsoTreatmentProcessSupport app!</h1>" +
                       $"<p>Click <a href='{confirmationLink}'>here</a> to confirm your email.</p></body></html>";
 

@@ -8,8 +8,8 @@ namespace IsoTreatmentProcessSupportAPI.Services
     public interface IEntryService
     {
         IEnumerable<EntryDto> GetAll(int userId);
-        int Add(int userId, CreateEntryDto dto);
-        void Update(int id, UpdateEntryDto dto);
+        EntryDto Add(int userId, CreateEntryDto dto);
+        EntryDto Update(int id, UpdateEntryDto dto);
         void Delete(int id);
     }
     public class EntryService : IEntryService
@@ -21,7 +21,7 @@ namespace IsoTreatmentProcessSupportAPI.Services
             _dbContext = dbContext;
             _mapper = mapper;
         }
-        public int Add(int userId, CreateEntryDto dto)
+        public EntryDto Add(int userId, CreateEntryDto dto)
         {
             var user = _dbContext.Users.FirstOrDefault(u => u.Id == userId);
 
@@ -37,7 +37,9 @@ namespace IsoTreatmentProcessSupportAPI.Services
             _dbContext.Entries.Add(entryEntity);
             _dbContext.SaveChanges();
 
-            return entryEntity.Id;
+            var addedEntry = _mapper.Map<EntryDto>(entryEntity);
+
+            return addedEntry;
         }
 
         public void Delete(int id)
@@ -76,7 +78,7 @@ namespace IsoTreatmentProcessSupportAPI.Services
             return entryDtos;
         }
 
-        public void Update(int id, UpdateEntryDto dto)
+        public EntryDto Update(int id, UpdateEntryDto dto)
         {
             var entry = _dbContext.Entries.FirstOrDefault(e => e.Id == id);
 
@@ -87,7 +89,11 @@ namespace IsoTreatmentProcessSupportAPI.Services
 
             entry.Content = dto.Content;
 
+            var updatedEntry = _mapper.Map<EntryDto>(entry);
+
             _dbContext.SaveChanges();
+
+            return updatedEntry;
         }
     }
 }

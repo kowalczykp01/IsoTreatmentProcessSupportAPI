@@ -16,11 +16,11 @@ namespace IsoTreatmentProcessSupportAPI.Controllers
             _entryService = entryService;
         }
         [HttpPost("user/{userId}")]
-        public ActionResult Add([FromRoute] int userId, [FromBody] CreateEntryDto dto)
+        public ActionResult<EntryDto> Add([FromRoute] int userId, [FromBody] CreateEntryDto dto)
         {
-            int id = _entryService.Add(userId, dto);
+            var addedEntry = _entryService.Add(userId, dto);
 
-            return Ok(id);
+            return Ok(addedEntry);
         }
         [HttpGet("user/{userId}")]
         public ActionResult<IEnumerable<EntryDto>> GetAll([FromRoute] int userId)
@@ -30,11 +30,11 @@ namespace IsoTreatmentProcessSupportAPI.Controllers
             return Ok(entries);
         }
         [HttpPut("{id}")]
-        public ActionResult Update([FromRoute] int id, [FromBody] UpdateEntryDto dto)
+        public ActionResult<EntryDto> Update([FromRoute] int id, [FromBody] UpdateEntryDto dto)
         {
-            _entryService.Update(id, dto);
+            var updatedEntry = _entryService.Update(id, dto);
 
-            return Ok();
+            return Ok(updatedEntry);
         }
         [HttpDelete("{id}")]
         public ActionResult Delete([FromRoute] int id)

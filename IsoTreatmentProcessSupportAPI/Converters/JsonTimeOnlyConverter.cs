@@ -1,10 +1,17 @@
-﻿using System.Text.Json;
+﻿using System.Globalization;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace IsoTreatmentProcessSupportAPI.Converters
 {
     public class JsonTimeOnlyConverter : JsonConverter<TimeOnly>
     {
+        private readonly CultureInfo _cultureInfo;
+        public JsonTimeOnlyConverter()
+        {
+            _cultureInfo = new CultureInfo("pl-PL");
+        }
+
         public override TimeOnly Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             if (reader.TokenType == JsonTokenType.String && TimeSpan.TryParse(reader.GetString(), out var timeSpan))
@@ -16,7 +23,8 @@ namespace IsoTreatmentProcessSupportAPI.Converters
 
         public override void Write(Utf8JsonWriter writer, TimeOnly value, JsonSerializerOptions options)
         {
-            writer.WriteStringValue(value.ToString());
+            var formattedTime = value.ToString(_cultureInfo);
+            writer.WriteStringValue(formattedTime);
         }
     }
 }

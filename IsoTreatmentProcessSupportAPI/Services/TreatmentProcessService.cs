@@ -1,11 +1,12 @@
 ﻿using IsoTreatmentProcessSupportAPI.Entities;
 using IsoTreatmentProcessSupportAPI.Exceptions;
+using IsoTreatmentProcessSupportAPI.Models;
 
 namespace IsoTreatmentProcessSupportAPI.Services
 {
     public interface ITreatmentProcessService
     {
-        int GetRemainingTreatmentDays(int userId);
+        TreatmentProcessInfoDto GetRemainingTreatmentDays(int userId);
     }
     public class TreatmentProcessService : ITreatmentProcessService
     {
@@ -14,7 +15,7 @@ namespace IsoTreatmentProcessSupportAPI.Services
         {
             _dbContext = dbContext;
         }
-        public int GetRemainingTreatmentDays(int userId)
+        public TreatmentProcessInfoDto GetRemainingTreatmentDays(int userId)
         {
             var user = _dbContext.Users.FirstOrDefault(u => u.Id == userId);
 
@@ -29,7 +30,14 @@ namespace IsoTreatmentProcessSupportAPI.Services
 
             var remainingTreatmentDays = totalTreatmentDays - treatmentDaysPassed;
 
-            return remainingTreatmentDays;
+            var treatmentProcessInfo = new TreatmentProcessInfoDto()
+            {
+                TotalTreatmentDays = totalTreatmentDays,
+                TreatmentDaysPassed = treatmentDaysPassed,
+                RemainingTreatmentDays = remainingTreatmentDays
+            };
+
+            return treatmentProcessInfo;
         }
     }
 }

@@ -8,7 +8,7 @@ namespace IsoTreatmentProcessSupportAPI
     {
         public MappingProfile()
         {
-            CreateMap<CreateReminderDto, Reminder>();
+            CreateMap<CreateAndUpdateReminderDto, Reminder>();
 
             CreateMap<CreateEntryDto, Entry>();
 

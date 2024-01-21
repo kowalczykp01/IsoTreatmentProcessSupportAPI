@@ -16,11 +16,11 @@ namespace IsoTreatmentProcessSupportAPI.Controllers
             _reminderService = reminderService;
         }
         [HttpPost("user/{userId}")]
-        public ActionResult Add([FromRoute] int userId, [FromBody] CreateReminderDto dto)
+        public ActionResult<ReminderDto> Add([FromRoute] int userId, [FromBody] CreateAndUpdateReminderDto dto)
         {
-            _reminderService.Add(userId, dto);
+            var addedReminder = _reminderService.Add(userId, dto);
 
-            return Ok();
+            return Ok(addedReminder);
         }
         [HttpDelete("{id}")]
         public ActionResult Delete([FromRoute] int id)
@@ -44,11 +44,11 @@ namespace IsoTreatmentProcessSupportAPI.Controllers
             return Ok(reminders);
         }
         [HttpPut("{id}")]
-        public ActionResult Update([FromRoute] int id, [FromBody] ReminderDto dto)
+        public ActionResult<ReminderDto> Update([FromRoute] int id, [FromBody] CreateAndUpdateReminderDto dto)
         {
-            _reminderService.Update(id, dto);
+            var updatedReminder = _reminderService.Update(id, dto);
 
-            return Ok();
+            return Ok(updatedReminder);
         }
     }
 }

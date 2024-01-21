@@ -5,6 +5,7 @@ namespace IsoTreatmentProcessSupportAPI.Models
 {
     public class ReminderDto
     {
+        public int Id { get; set; }
         [JsonConverter(typeof(JsonTimeOnlyConverter))]
         public TimeOnly Time { get; set; }
     }

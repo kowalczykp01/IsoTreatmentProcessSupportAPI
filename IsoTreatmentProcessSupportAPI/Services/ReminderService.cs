@@ -10,9 +10,9 @@ namespace IsoTreatmentProcessSupportAPI.Services
     {
         IEnumerable<ReminderDto> GetAll(int userId);
         ReminderDto GetById(int id);
-        void Add(int userId, CreateReminderDto dto);
+        ReminderDto Add(int userId, CreateAndUpdateReminderDto dto);
         void Delete(int id);
-        void Update(int id, ReminderDto dto);
+        ReminderDto Update(int id, CreateAndUpdateReminderDto dto);
     }
     public class ReminderService : IReminderService
     {
@@ -23,7 +23,7 @@ namespace IsoTreatmentProcessSupportAPI.Services
             _dbContext = dbContext;
             _mapper = mapper;
         }
-        public void Add(int userId, CreateReminderDto dto)
+        public ReminderDto Add(int userId, CreateAndUpdateReminderDto dto)
         {
             var user = _dbContext.Users.FirstOrDefault(u => u.Id == userId);
 
@@ -38,6 +38,9 @@ namespace IsoTreatmentProcessSupportAPI.Services
 
             _dbContext.Reminders.Add(reminderEntity);
             _dbContext.SaveChanges();
+
+            var addedReminder = _mapper.Map<ReminderDto>(reminderEntity);
+            return addedReminder;
         }
 
         public void Delete(int id)
@@ -83,7 +86,7 @@ namespace IsoTreatmentProcessSupportAPI.Services
             return reminderDto;
         }
 
-        public void Update(int id, ReminderDto dto)
+        public ReminderDto Update(int id, CreateAndUpdateReminderDto dto)
         {
             var reminder = _dbContext.Reminders.First(r => r.Id == id);
 
@@ -95,6 +98,9 @@ namespace IsoTreatmentProcessSupportAPI.Services
             reminder.Time = dto.Time;
 
             _dbContext.SaveChanges();
+
+            var updatedReminder = _mapper.Map<ReminderDto>(reminder);
+            return updatedReminder;
         }
     }
 }

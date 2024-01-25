@@ -15,10 +15,12 @@ namespace IsoTreatmentProcessSupportAPI.Controllers
         {
             _reminderService = reminderService;
         }
-        [HttpPost("user/{userId}")]
-        public ActionResult<ReminderDto> Add([FromRoute] int userId, [FromBody] CreateAndUpdateReminderDto dto)
+        [HttpPost()]
+        public ActionResult<ReminderDto> Add([FromBody] CreateAndUpdateReminderDto dto)
         {
-            var addedReminder = _reminderService.Add(userId, dto);
+            var token = HttpContext.Request.Cookies["token"];
+
+            var addedReminder = _reminderService.Add(token, dto);
 
             return Ok(addedReminder);
         }
@@ -36,10 +38,12 @@ namespace IsoTreatmentProcessSupportAPI.Controllers
 
             return Ok(reminder);
         }
-        [HttpGet("user/{userId}")]
-        public ActionResult<IEnumerable<ReminderDto>> GetAll([FromRoute] int userId)
+        [HttpGet()]
+        public ActionResult<IEnumerable<ReminderDto>> GetAll()
         {
-            var reminders = _reminderService.GetAll(userId);
+            var token = HttpContext.Request.Cookies["token"];
+
+            var reminders = _reminderService.GetAll(token);
 
             return Ok(reminders);
         }

@@ -7,8 +7,8 @@ namespace IsoTreatmentProcessSupportAPI.Services
 {
     public interface IEntryService
     {
-        IEnumerable<EntryDto> GetAll(int userId);
-        EntryDto Add(int userId, CreateEntryDto dto);
+        IEnumerable<EntryDto> GetAll(string token);
+        EntryDto Add(string token, CreateEntryDto dto);
         EntryDto Update(int id, UpdateEntryDto dto);
         void Delete(int id);
     }
@@ -16,13 +16,17 @@ namespace IsoTreatmentProcessSupportAPI.Services
     {
         private readonly IsoSupportDbContext _dbContext;
         private readonly IMapper _mapper;
-        public EntryService(IsoSupportDbContext dbContext, IMapper mapper)
+        private readonly ITokenService _tokenService;
+        public EntryService(IsoSupportDbContext dbContext, IMapper mapper, ITokenService tokenService)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _tokenService = tokenService;
         }
-        public EntryDto Add(int userId, CreateEntryDto dto)
+        public EntryDto Add(string token, CreateEntryDto dto)
         {
+            int userId = _tokenService.GetUserIdFromToken(token);
+
             var user = _dbContext.Users.FirstOrDefault(u => u.Id == userId);
 
             if (user is null)
@@ -55,8 +59,10 @@ namespace IsoTreatmentProcessSupportAPI.Services
             _dbContext.SaveChanges();
         }
 
-        public IEnumerable<EntryDto> GetAll(int userId)
+        public IEnumerable<EntryDto> GetAll(string token)
         {
+            int userId = _tokenService.GetUserIdFromToken(token);
+
             var user = _dbContext.Users.FirstOrDefault(u => u.Id == userId);
 
             if (user is null)

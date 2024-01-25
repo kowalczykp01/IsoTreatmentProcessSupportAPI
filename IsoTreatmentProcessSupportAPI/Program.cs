@@ -6,6 +6,7 @@ using IsoTreatmentProcessSupportAPI.Middlewares;
 using IsoTreatmentProcessSupportAPI.Models;
 using IsoTreatmentProcessSupportAPI.Models.Validators;
 using IsoTreatmentProcessSupportAPI.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using NLog.Web;
@@ -26,6 +27,10 @@ builder.Services.AddAuthentication(option =>
     option.DefaultAuthenticateScheme = "Bearer";
     option.DefaultScheme = "Bearer";
     option.DefaultChallengeScheme = "Bearer";
+}).AddCookie(x =>
+{
+    x.Cookie.Name = "token";
+
 }).AddJwtBearer(cfg =>
 {
     cfg.RequireHttpsMetadata = false;
@@ -35,6 +40,14 @@ builder.Services.AddAuthentication(option =>
         ValidIssuer = authenticationSettings.JwtIssuer,
         ValidAudience = authenticationSettings.JwtIssuer,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authenticationSettings.JwtKey)),
+    };
+    cfg.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            context.Token = context.Request.Cookies["token"];
+            return Task.CompletedTask;
+        }
     };
 });
 
@@ -47,6 +60,7 @@ builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
 builder.Services.AddScoped<IValidator<CreateEntryDto>, CreateEntryDtoValidator>();
 builder.Services.AddTransient<IMailkitService, MailkitService>();
+builder.Services.AddTransient<ITokenService, TokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IReminderService, ReminderService>();
 builder.Services.AddScoped<IEntryService, EntryService>();
@@ -58,6 +72,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("FrontendClient", builder =>
     builder.AllowAnyMethod()
     .AllowAnyHeader()
+    .AllowCredentials()
     .WithOrigins("http://localhost:5173")
     );
 });

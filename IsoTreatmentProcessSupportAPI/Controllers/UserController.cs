@@ -30,7 +30,18 @@ namespace IsoTreatmentProcessSupportAPI.Controllers
         public ActionResult Login([FromBody] LoginDto dto)
         {
             string token = _userService.GenerateLoginToken(dto);
-            return Ok(token);
+
+            HttpContext.Response.Cookies.Append("token", token,
+                new CookieOptions
+                {
+                    Expires = DateTime.Now.AddDays(1),
+                    HttpOnly = true,
+                    Secure = true,
+                    IsEssential = true,
+                    SameSite = SameSiteMode.None
+                });
+
+            return Ok();
         }
     }
 }

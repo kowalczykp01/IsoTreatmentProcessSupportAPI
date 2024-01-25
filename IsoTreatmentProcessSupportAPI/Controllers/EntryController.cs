@@ -15,17 +15,21 @@ namespace IsoTreatmentProcessSupportAPI.Controllers
         {
             _entryService = entryService;
         }
-        [HttpPost("user/{userId}")]
-        public ActionResult<EntryDto> Add([FromRoute] int userId, [FromBody] CreateEntryDto dto)
+        [HttpPost()]
+        public ActionResult<EntryDto> Add([FromBody] CreateEntryDto dto)
         {
-            var addedEntry = _entryService.Add(userId, dto);
+            var token = HttpContext.Request.Cookies["token"];
+
+            var addedEntry = _entryService.Add(token, dto);
 
             return Ok(addedEntry);
         }
-        [HttpGet("user/{userId}")]
-        public ActionResult<IEnumerable<EntryDto>> GetAll([FromRoute] int userId)
+        [HttpGet()]
+        public ActionResult<IEnumerable<EntryDto>> GetAll()
         {
-            var entries = _entryService.GetAll(userId);
+            var token = HttpContext.Request.Cookies["token"];
+
+            var entries = _entryService.GetAll(token);
             
             return Ok(entries);
         }

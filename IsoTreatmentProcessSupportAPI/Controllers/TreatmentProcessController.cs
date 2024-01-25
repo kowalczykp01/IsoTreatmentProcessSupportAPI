@@ -10,16 +10,18 @@ namespace IsoTreatmentProcessSupportAPI.Controllers
     [Authorize]
     public class TreatmentProcessController : ControllerBase
     {
-        private readonly ITreatmentProcessService _treaamentProcessService;
+        private readonly ITreatmentProcessService _treatmentProcessService;
         public TreatmentProcessController(ITreatmentProcessService treatmentProcessService)
         {
-            _treaamentProcessService = treatmentProcessService;
+            _treatmentProcessService = treatmentProcessService;
         }
 
-        [HttpGet("{userId}")]
-        public ActionResult<TreatmentProcessInfoDto> Get([FromRoute] int userId)
+        [HttpGet()]
+        public ActionResult<TreatmentProcessInfoDto> Get()
         {
-            var treatmentProcessInfo = _treaamentProcessService.GetRemainingTreatmentDays(userId);
+            var token = HttpContext.Request.Cookies["token"];
+
+            var treatmentProcessInfo = _treatmentProcessService.GetRemainingTreatmentDays(token);
 
             return Ok(treatmentProcessInfo);
         }

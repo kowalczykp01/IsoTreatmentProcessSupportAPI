@@ -6,17 +6,21 @@ namespace IsoTreatmentProcessSupportAPI.Services
 {
     public interface ITreatmentProcessService
     {
-        TreatmentProcessInfoDto GetRemainingTreatmentDays(int userId);
+        TreatmentProcessInfoDto GetRemainingTreatmentDays(string token);
     }
     public class TreatmentProcessService : ITreatmentProcessService
     {
         private readonly IsoSupportDbContext _dbContext;
-        public TreatmentProcessService(IsoSupportDbContext dbContext)
+        private readonly ITokenService _tokenService;
+        public TreatmentProcessService(IsoSupportDbContext dbContext, ITokenService tokenService)
         {
             _dbContext = dbContext;
+            _tokenService = tokenService;
         }
-        public TreatmentProcessInfoDto GetRemainingTreatmentDays(int userId)
+        public TreatmentProcessInfoDto GetRemainingTreatmentDays(string token)
         {
+            int userId = _tokenService.GetUserIdFromToken(token);
+
             var user = _dbContext.Users.FirstOrDefault(u => u.Id == userId);
 
             if (user is null)

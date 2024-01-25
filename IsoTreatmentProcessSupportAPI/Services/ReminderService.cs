@@ -8,9 +8,9 @@ namespace IsoTreatmentProcessSupportAPI.Services
 {
     public interface IReminderService
     {
-        IEnumerable<ReminderDto> GetAll(int userId);
+        IEnumerable<ReminderDto> GetAll(string token);
         ReminderDto GetById(int id);
-        ReminderDto Add(int userId, CreateAndUpdateReminderDto dto);
+        ReminderDto Add(string token, CreateAndUpdateReminderDto dto);
         void Delete(int id);
         ReminderDto Update(int id, CreateAndUpdateReminderDto dto);
     }
@@ -18,13 +18,17 @@ namespace IsoTreatmentProcessSupportAPI.Services
     {
         private readonly IsoSupportDbContext _dbContext;
         private readonly IMapper _mapper;
-        public ReminderService(IsoSupportDbContext dbContext, IMapper mapper)
+        private readonly ITokenService _tokenService;
+        public ReminderService(IsoSupportDbContext dbContext, IMapper mapper, ITokenService tokenService)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _tokenService = tokenService;
         }
-        public ReminderDto Add(int userId, CreateAndUpdateReminderDto dto)
+        public ReminderDto Add(string token, CreateAndUpdateReminderDto dto)
         {
+            int userId = _tokenService.GetUserIdFromToken(token);
+
             var user = _dbContext.Users.FirstOrDefault(u => u.Id == userId);
 
             if (user is null)
@@ -56,8 +60,10 @@ namespace IsoTreatmentProcessSupportAPI.Services
             _dbContext.SaveChanges();
         }
 
-        public IEnumerable<ReminderDto> GetAll(int userId)
+        public IEnumerable<ReminderDto> GetAll(string token)
         {
+            int userId = _tokenService.GetUserIdFromToken(token);
+
             var user = _dbContext.Users
                 .Include(u => u.Reminders)
                 .FirstOrDefault(u => u.Id == userId);

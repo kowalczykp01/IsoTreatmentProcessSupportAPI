@@ -1,6 +1,9 @@
 ﻿using IsoTreatmentProcessSupportAPI.Models;
 using IsoTreatmentProcessSupportAPI.Services;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 
 namespace IsoTreatmentProcessSupportAPI.Controllers
 {
@@ -42,6 +45,21 @@ namespace IsoTreatmentProcessSupportAPI.Controllers
                 });
 
             return Ok();
+        }
+        [Authorize]
+        [HttpPost("logout")]
+        public ActionResult Logout()
+        {
+            HttpContext.Response.Cookies.Append("token", "", new CookieOptions
+            {
+                Expires = DateTime.Now.AddDays(-1),
+                HttpOnly = true,
+                Secure = true,
+                IsEssential = true,
+                SameSite = SameSiteMode.None
+            });
+
+            return Ok("User logged out successfully");
         }
     }
 }

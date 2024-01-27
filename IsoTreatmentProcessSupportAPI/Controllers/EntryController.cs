@@ -36,14 +36,18 @@ namespace IsoTreatmentProcessSupportAPI.Controllers
         [HttpPut("{id}")]
         public ActionResult<EntryDto> Update([FromRoute] int id, [FromBody] UpdateEntryDto dto)
         {
-            var updatedEntry = _entryService.Update(id, dto);
+            var token = HttpContext.Request.Cookies["token"];
+
+            var updatedEntry = _entryService.Update(token, id, dto);
 
             return Ok(updatedEntry);
         }
         [HttpDelete("{id}")]
         public ActionResult Delete([FromRoute] int id)
         {
-            _entryService.Delete(id);
+            var token = HttpContext.Request.Cookies["token"];
+
+            _entryService.Delete(token, id);
 
             return NoContent();
         }

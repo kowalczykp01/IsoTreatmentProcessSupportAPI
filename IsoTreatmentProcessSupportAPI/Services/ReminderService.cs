@@ -9,10 +9,10 @@ namespace IsoTreatmentProcessSupportAPI.Services
     public interface IReminderService
     {
         IEnumerable<ReminderDto> GetAll(string token);
-        ReminderDto GetById(int id);
+        ReminderDto GetById(string token, int id);
         ReminderDto Add(string token, CreateAndUpdateReminderDto dto);
-        void Delete(int id);
-        ReminderDto Update(int id, CreateAndUpdateReminderDto dto);
+        void Delete(string token, int id);
+        ReminderDto Update(string token, int id, CreateAndUpdateReminderDto dto);
     }
     public class ReminderService : IReminderService
     {
@@ -47,9 +47,21 @@ namespace IsoTreatmentProcessSupportAPI.Services
             return addedReminder;
         }
 
-        public void Delete(int id)
+        public void Delete(string token, int id)
         {
-            var reminder = _dbContext.Reminders.FirstOrDefault(r => r.Id == id);
+            int userId = _tokenService.GetUserIdFromToken(token);
+
+            var user = _dbContext.Users
+                .Include(u => u.Reminders)
+                .FirstOrDefault(u => u.Id == userId);
+
+            if (user is null)
+            {
+                throw new NotFoundException("User not found");
+            }
+
+            var reminder = user.Reminders.FirstOrDefault(r => r.Id == id);
+
 
             if (reminder is null)
             {
@@ -78,9 +90,20 @@ namespace IsoTreatmentProcessSupportAPI.Services
             return reminderDtos;
         }
 
-        public ReminderDto GetById(int id)
+        public ReminderDto GetById(string token, int id)
         {
-            var reminder = _dbContext.Reminders.FirstOrDefault(r => r.Id == id);
+            int userId = _tokenService.GetUserIdFromToken(token);
+
+            var user = _dbContext.Users
+                .Include(u => u.Reminders)
+                .FirstOrDefault(u => u.Id == userId);
+
+            if (user is null)
+            {
+                throw new NotFoundException("User not found");
+            }
+
+            var reminder = user.Reminders.FirstOrDefault(r => r.Id == id);
 
             if (reminder is null)
             {
@@ -92,9 +115,20 @@ namespace IsoTreatmentProcessSupportAPI.Services
             return reminderDto;
         }
 
-        public ReminderDto Update(int id, CreateAndUpdateReminderDto dto)
+        public ReminderDto Update(string token, int id, CreateAndUpdateReminderDto dto)
         {
-            var reminder = _dbContext.Reminders.First(r => r.Id == id);
+            int userId = _tokenService.GetUserIdFromToken(token);
+
+            var user = _dbContext.Users
+                .Include(u => u.Reminders)
+                .FirstOrDefault(u => u.Id == userId);
+
+            if (user is null)
+            {
+                throw new NotFoundException("User not found");
+            }
+
+            var reminder = user.Reminders.FirstOrDefault(r => r.Id == id);
 
             if (reminder is null)
             {

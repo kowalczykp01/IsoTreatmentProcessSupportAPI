@@ -2,6 +2,8 @@
 using IsoTreatmentProcessSupportAPI.Entities;
 using IsoTreatmentProcessSupportAPI.Exceptions;
 using IsoTreatmentProcessSupportAPI.Models;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 
 namespace IsoTreatmentProcessSupportAPI.Services
 {
@@ -9,8 +11,8 @@ namespace IsoTreatmentProcessSupportAPI.Services
     {
         IEnumerable<EntryDto> GetAll(string token);
         EntryDto Add(string token, CreateEntryDto dto);
-        EntryDto Update(int id, UpdateEntryDto dto);
-        void Delete(int id);
+        EntryDto Update(string token, int id, UpdateEntryDto dto);
+        void Delete(string token, int id);
     }
     public class EntryService : IEntryService
     {
@@ -46,9 +48,21 @@ namespace IsoTreatmentProcessSupportAPI.Services
             return addedEntry;
         }
 
-        public void Delete(int id)
+        public void Delete(string token, int id)
         {
-            var entry = _dbContext.Entries.FirstOrDefault(e => e.Id == id);
+            int userId = _tokenService.GetUserIdFromToken(token);
+
+            var user = _dbContext
+                .Users.Include(u => u.Entries)
+                .FirstOrDefault(u => u.Id == userId);
+
+            if (user is null)
+            {
+                throw new NotFoundException("User not found");
+            }
+
+            var entry = user.Entries.FirstOrDefault(e => e.Id == id);
+
 
             if (entry is null)
             {
@@ -84,9 +98,20 @@ namespace IsoTreatmentProcessSupportAPI.Services
             return entryDtos;
         }
 
-        public EntryDto Update(int id, UpdateEntryDto dto)
+        public EntryDto Update(string token, int id, UpdateEntryDto dto)
         {
-            var entry = _dbContext.Entries.FirstOrDefault(e => e.Id == id);
+            int userId = _tokenService.GetUserIdFromToken(token);
+
+            var user = _dbContext
+                .Users.Include(u => u.Entries)
+                .FirstOrDefault(u => u.Id == userId);
+
+            if (user is null)
+            {
+                throw new NotFoundException("User not found");
+            }
+
+            var entry = user.Entries.FirstOrDefault(e => e.Id == id);
 
             if (entry is null)
             {

@@ -27,14 +27,18 @@ namespace IsoTreatmentProcessSupportAPI.Controllers
         [HttpDelete("{id}")]
         public ActionResult Delete([FromRoute] int id)
         {
-            _reminderService.Delete(id);
+            var token = HttpContext.Request.Cookies["token"];
+
+            _reminderService.Delete(token, id);
 
             return NoContent();
         }
         [HttpGet("{id}")]
         public ActionResult<ReminderDto> Get([FromRoute] int id)
         {
-            ReminderDto reminder = _reminderService.GetById(id);
+            var token = HttpContext.Request.Cookies["token"];
+
+            ReminderDto reminder = _reminderService.GetById(token, id);
 
             return Ok(reminder);
         }
@@ -50,7 +54,9 @@ namespace IsoTreatmentProcessSupportAPI.Controllers
         [HttpPut("{id}")]
         public ActionResult<ReminderDto> Update([FromRoute] int id, [FromBody] CreateAndUpdateReminderDto dto)
         {
-            var updatedReminder = _reminderService.Update(id, dto);
+            var token = HttpContext.Request.Cookies["token"];
+
+            var updatedReminder = _reminderService.Update(token, id, dto);
 
             return Ok(updatedReminder);
         }

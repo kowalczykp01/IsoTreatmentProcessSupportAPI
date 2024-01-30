@@ -22,12 +22,12 @@ namespace IsoTreatmentProcessSupportAPI.Services
             //emailConfirmationToken = WebUtility.UrlEncode(emailConfirmationToken);
             var email = new MimeMessage();
             Uri confirmationLink = new Uri("http://localhost:5173/activateAccount?token=" + emailConfirmationToken);
-            string body = "<html><body><h1>Welcome to IsoTreatmentProcessSupport app!</h1>" +
-                      $"<p>Click <a href='{confirmationLink}'>here</a> to confirm your email.</p></body></html>";
+            string body = "<html><body><h1>Witamy w IsoSupport!</h1>" +
+                      $"<p>Kliknij <a href='{confirmationLink}'>tutaj</a> aby potwierdzić swój adres email.</p></body></html>";
 
             email.From.Add(MailboxAddress.Parse(_configuration.GetSection("EmailUsername").Value)); 
             email.To.Add(MailboxAddress.Parse(userEmail));
-            email.Subject = "Test subject";
+            email.Subject = "Potwierdź swój adres email";
             email.Body = new TextPart(TextFormat.Html)
             {
                 Text = body

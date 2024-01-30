@@ -1,4 +1,5 @@
-﻿using IsoTreatmentProcessSupportAPI.Entities;
+﻿using AutoMapper;
+using IsoTreatmentProcessSupportAPI.Entities;
 using IsoTreatmentProcessSupportAPI.Exceptions;
 using IsoTreatmentProcessSupportAPI.Models;
 using Microsoft.AspNetCore.Identity;
@@ -16,6 +17,8 @@ namespace IsoTreatmentProcessSupportAPI.Services
         void ConfirmEmail(string emailConfirmationToken);
         string GenerateEmailConfirmationToken(string userEmail);
         string GenerateLoginToken(LoginDto dto);
+        UserDto GetUserInfo(string token);
+        UserDto UpdateUserInfo(string token, UserDto dto);
     }
     public class UserService : IUserService
     {
@@ -23,13 +26,78 @@ namespace IsoTreatmentProcessSupportAPI.Services
         private readonly IPasswordHasher<User> _passwordHasher;
         private readonly IMailkitService _mailkitService;
         private readonly AuthenticationSettings _authenticationSettings;
+        private readonly ITokenService _tokenService;
+        private readonly IMapper _mapper;
 
-        public UserService(IsoSupportDbContext dbContext, IPasswordHasher<User> passwordHasher, IMailkitService mailkitService, AuthenticationSettings authenticationSettings)
+        public UserService(IsoSupportDbContext dbContext, IPasswordHasher<User> passwordHasher, IMailkitService mailkitService,
+            AuthenticationSettings authenticationSettings, ITokenService tokenService, IMapper mapper)
         {
             _dbContext = dbContext;
             _passwordHasher = passwordHasher;
             _mailkitService = mailkitService;
             _authenticationSettings = authenticationSettings;
+            _tokenService = tokenService;
+            _mapper = mapper;
+        }
+
+        public UserDto GetUserInfo(string token)
+        {
+            int userId = _tokenService.GetUserIdFromToken(token);
+
+            var user = _dbContext.Users.FirstOrDefault(u => u.Id == userId);
+
+            if (user == null)
+            {
+                throw new NotFoundException("User not found");
+            }
+
+            var userDto = _mapper.Map<UserDto>(user);
+
+            return userDto;
+        }
+
+        public UserDto UpdateUserInfo(string token, UserDto dto)
+        {
+            int userId = _tokenService.GetUserIdFromToken(token);
+
+            var user = _dbContext.Users.FirstOrDefault(u => u.Id == userId);
+
+            if (user == null)
+            {
+                throw new NotFoundException("User not found");
+            }
+
+            if (user.FirstName != dto.FirstName)
+            {
+                user.FirstName = dto.FirstName;
+            }
+
+            if (user.LastName != dto.LastName)
+            {
+                user.LastName = dto.LastName;
+            }
+
+            if (user.Email != dto.Email)
+            {
+                user.Email = dto.Email;
+                user.EmailConfirmed = false;
+                _dbContext.SaveChanges();
+
+                var emailConfirmationToken = GenerateEmailConfirmationToken(dto.Email);
+
+                _mailkitService.Send(dto.Email, emailConfirmationToken);
+            }
+
+            if (user.Weight != dto.Weight)
+            {
+                user.Weight = dto.Weight;
+            }
+
+            _dbContext.SaveChanges();
+
+            var updatedUserInfo = _mapper.Map<UserDto>(user);
+
+            return updatedUserInfo;
         }
 
         public void RegisterUser(RegisterUserDto dto)

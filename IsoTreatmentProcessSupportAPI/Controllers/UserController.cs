@@ -61,5 +61,27 @@ namespace IsoTreatmentProcessSupportAPI.Controllers
 
             return Ok("User logged out successfully");
         }
+
+        [Authorize]
+        [HttpGet("info")]
+        public ActionResult<UserDto> GetUserInfo()
+        {
+            var token = HttpContext.Request.Cookies["token"];
+
+            var userInfo = _userService.GetUserInfo(token);
+
+            return userInfo;
+        }
+
+        [Authorize]
+        [HttpPost("info/update")]
+        public ActionResult<UserDto> UpdateUserInfo([FromBody] UserDto dto)
+        {
+            var token = HttpContext.Request.Cookies["token"];
+
+            var userInfo = _userService.UpdateUserInfo(token, dto);
+
+            return userInfo;
+        }
     }
 }

@@ -15,6 +15,8 @@ namespace IsoTreatmentProcessSupportAPI
             CreateMap<Reminder, ReminderDto>();
 
             CreateMap<Entry, EntryDto>();
+
+            CreateMap<User, UserDto>();
         }
     }
 }

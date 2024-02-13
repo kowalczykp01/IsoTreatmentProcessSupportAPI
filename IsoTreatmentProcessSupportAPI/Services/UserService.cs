@@ -116,11 +116,12 @@ namespace IsoTreatmentProcessSupportAPI.Services
             
             newUser.PasswordHash = hashedPassword;
             _dbContext.Users.Add(newUser);
-            _dbContext.SaveChanges();
 
             var emailConfirmationToken = GenerateEmailConfirmationToken(dto.Email);
 
             _mailkitService.Send(newUser.Email, emailConfirmationToken);
+
+            _dbContext.SaveChanges();
         }
 
         public void ConfirmEmail(string emailConfirmationToken)

@@ -15,10 +15,12 @@ namespace IsoTreatmentProcessSupportAPI.Services
     {
         void RegisterUser(RegisterUserDto dto);
         void ConfirmEmail(string emailConfirmationToken);
-        string GenerateEmailConfirmationToken(string userEmail);
+        string GenerateEmailToken(string userEmail);
         string GenerateLoginToken(LoginDto dto);
         UserDto GetUserInfo(string token);
         UserDto UpdateUserInfo(string token, UserDto dto);
+        void ForgotPassword(string email);
+        void ResetPassword(string token, ResetPasswordDto dto);
     }
     public class UserService : IUserService
     {
@@ -83,9 +85,9 @@ namespace IsoTreatmentProcessSupportAPI.Services
                 user.EmailConfirmed = false;
                 _dbContext.SaveChanges();
 
-                var emailConfirmationToken = GenerateEmailConfirmationToken(dto.Email);
+                var emailConfirmationToken = GenerateEmailToken(dto.Email);
 
-                _mailkitService.Send(dto.Email, emailConfirmationToken);
+                _mailkitService.SendEmailConfirmationMail(dto.Email, emailConfirmationToken);
             }
 
             if (user.Weight != dto.Weight)
@@ -117,9 +119,51 @@ namespace IsoTreatmentProcessSupportAPI.Services
             newUser.PasswordHash = hashedPassword;
             _dbContext.Users.Add(newUser);
 
-            var emailConfirmationToken = GenerateEmailConfirmationToken(dto.Email);
+            var emailConfirmationToken = GenerateEmailToken(dto.Email);
 
-            _mailkitService.Send(newUser.Email, emailConfirmationToken);
+            _mailkitService.SendEmailConfirmationMail(newUser.Email, emailConfirmationToken);
+
+            _dbContext.SaveChanges();
+        }
+
+        public void ForgotPassword(string email)
+        {
+            var user = _dbContext.Users.FirstOrDefault(u => u.Email == email);
+
+            if (user is null)
+            {
+                throw new NotFoundException("User not found");
+            }
+
+            var resetPasswordToken = GenerateEmailToken(email);
+            user.ResetPasswordToken = resetPasswordToken;
+
+            _dbContext.SaveChanges();
+
+            _mailkitService.SendResetPasswordMail(user.Email, resetPasswordToken);
+        }
+
+        public void ResetPassword(string token, ResetPasswordDto dto)
+        {
+            var userEmail = DecodeUserEmailFromToken(token);
+
+            var user = _dbContext
+                .Users
+                .FirstOrDefault(e => e.Email == userEmail);
+
+            if (user == null)
+            {
+                throw new NotFoundException("User not found");
+            }
+
+            if (user.ResetPasswordToken != token)
+            {
+                throw new BadRequestException("Cannot reset password");
+            }
+
+            var hashedPassword = _passwordHasher.HashPassword(user, dto.NewPassword);
+
+            user.PasswordHash = hashedPassword;
 
             _dbContext.SaveChanges();
         }
@@ -147,16 +191,16 @@ namespace IsoTreatmentProcessSupportAPI.Services
             _dbContext.SaveChanges();
         }
 
-        public string GenerateEmailConfirmationToken(string userEmail)
+        public string GenerateEmailToken(string email)
         {
             var claims = new List<Claim>()
             {
-                new Claim(ClaimTypes.Email, $"{userEmail}")
+                new Claim(ClaimTypes.Email, $"{email}")
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authenticationSettings.JwtKey));
             var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expires = DateTime.Now.AddDays(_authenticationSettings.JwtExpireDays);
+            var expires = DateTime.Now.AddHours(_authenticationSettings.JwtExpireHours);
 
             var token = new JwtSecurityToken(_authenticationSettings.JwtIssuer,
                 _authenticationSettings.JwtIssuer,

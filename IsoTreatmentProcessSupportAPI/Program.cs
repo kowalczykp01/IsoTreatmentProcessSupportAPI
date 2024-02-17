@@ -59,6 +59,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
 builder.Services.AddScoped<IValidator<CreateEntryDto>, CreateEntryDtoValidator>();
+builder.Services.AddScoped<IValidator<ResetPasswordDto>, ResetPasswordDtoValidator>();
 builder.Services.AddTransient<IMailkitService, MailkitService>();
 builder.Services.AddTransient<ITokenService, TokenService>();
 builder.Services.AddScoped<IUserService, UserService>();

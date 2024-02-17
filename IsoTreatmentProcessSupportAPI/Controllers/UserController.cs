@@ -29,6 +29,19 @@ namespace IsoTreatmentProcessSupportAPI.Controllers
             _userService.ConfirmEmail(emailConfirmationToken);
             return Ok("Email confirmed, thank you!");
         }
+        [HttpPost("forgot-password")]
+        public ActionResult ForgotPassword([FromQuery] string email)
+        {
+            _userService.ForgotPassword(email);
+            return Ok();
+        }
+        [HttpPost("reset-password")]
+        public ActionResult ResetPassword([FromQuery] string token, ResetPasswordDto dto)
+        {
+            _userService.ResetPassword(token, dto);
+            return Ok();
+        }
+
         [HttpPost("login")]
         public ActionResult Login([FromBody] LoginDto dto)
         {

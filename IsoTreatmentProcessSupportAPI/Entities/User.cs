@@ -13,7 +13,7 @@
         public int DailyDose { get; set; }
         public DateTime MedicationStartDate { get; set; }
 
-        public string ResetPasswordToken { get; set; }
+        public string? ResetPasswordToken { get; set; }
         public virtual ICollection<Entry> Entries { get; set; }
         public virtual ICollection<Reminder> Reminders { get; set; }
     }
